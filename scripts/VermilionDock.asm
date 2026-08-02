@@ -1,5 +1,6 @@
 VermilionDock_Script:
 	call EnableAutoTextBoxDrawing
+	call VermilionDockTryTruckMew
 	CheckEventHL EVENT_STARTED_WALKING_OUT_OF_DOCK
 	jr nz, .walking_out_of_dock
 	CheckEventReuseHL EVENT_GOT_HM01
@@ -34,6 +35,36 @@ VermilionDock_Script:
 	ret nz
 	ld [wJoyIgnore], a
 	SetEventReuseHL EVENT_WALKED_OUT_OF_DOCK
+	ret
+
+; Walking into the truck while strength is active triggers dialog then mew battle
+VermilionDockTryTruckMew:
+	CheckEventHL EVENT_BEAT_TRUCK_MEW
+	ret nz
+	ld a, [wStatusFlags1]
+	bit BIT_STRENGTH_ACTIVE, a
+	ret z
+	ldh a, [hJoyHeld]
+	and PAD_CTRL_PAD
+	ret z
+	predef GetTileAndCoordsInFrontOfPlayer ; (e,d) = (x,y) of tile player is pointed at
+	ld a, d
+	and a ; truck is at y=0
+	ret nz
+	ld a, e
+	cp 20 ; truck is at x=20
+	jr z, .truck
+	cp 21 ; truck is at x=21
+	ret nz
+.truck
+	SetEvent EVENT_BEAT_TRUCK_MEW
+	ld a, TEXT_VERMILIONDOCK_TRUCK_STRENGTH
+	ldh [hTextID], a
+	call DisplayTextID
+	ld a, MEW
+	ld [wCurOpponent], a
+	ld a, 5
+	ld [wCurEnemyLevel], a
 	ret
 
 VermilionDockSSAnneLeavesScript:
@@ -211,7 +242,12 @@ VermilionDock_EraseSSAnne:
 VermilionDock_TextPointers:
 	def_text_pointers
 	dw_const VermilionDockUnusedText, TEXT_VERMILIONDOCK_UNUSED
+	dw_const VermilionDockTruckStrengthText, TEXT_VERMILIONDOCK_TRUCK_STRENGTH
 
 VermilionDockUnusedText:
 	text_far _VermilionDockUnusedText
+	text_end
+
+VermilionDockTruckStrengthText:
+	text_far _VermilionDockTruckStrengthText
 	text_end
