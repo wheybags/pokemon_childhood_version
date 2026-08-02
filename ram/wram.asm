@@ -2247,6 +2247,8 @@ wBoxMonNicksEnd::
 
 wBoxDataEnd::
 
+wCatchPressCount:: db
+
 
 SECTION "Stack", WRAM0
 

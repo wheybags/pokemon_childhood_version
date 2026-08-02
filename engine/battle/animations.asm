@@ -743,8 +743,12 @@ DoBallShakeSpecialEffects:
 ; if it is the beginning of a shake, play a sound and wait 2/3 of a second
 	ld a, SFX_TINK
 	call PlaySound
-	ld c, 40
-	call DelayFrames
+
+	; instead of a straight delay 40 frames, call our special delay that counts also counts a presses,
+	; so we can use this to have spamming a affect your catch chance
+	;ld c, 40
+	;call DelayFrames
+	farcall DelayAndCountASpam ; clobbers all registers, I think we don't need any though
 .skipPlayingSound
 	ld a, [wSubAnimCounter]
 	dec a
@@ -2620,6 +2624,14 @@ TossBallAnimation:
 	pop bc
 	dec c
 	jr nz, .PlayNextAnimation
+
+	; check if catch was successful
+	ld a, [wPokeBallAnimData]
+	cp $43 ; successful capture value
+	ret nz ; failed, return
+
+	; succeeded, do the spamming A calculation
+	farcall ApplyCatchSpamPenalty ; can overwrite wPokeBallAnimData with fail capture state
 	ret
 
 .PokeBallAnimations:

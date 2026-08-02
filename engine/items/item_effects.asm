@@ -128,6 +128,8 @@ ItemUseBall:
 	xor a
 	ld [wCapturedMonSpecies], a
 
+	ld [wCatchPressCount], a
+
 	ld a, [wBattleType]
 	cp BATTLE_TYPE_SAFARI
 	jr nz, .skipSafariZoneCode
