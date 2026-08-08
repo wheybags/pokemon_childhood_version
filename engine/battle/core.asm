@@ -3722,6 +3722,9 @@ PrintMoveFailureText:
 	jr z, .playersTurn
 	ld de, wEnemyMoveEffect
 .playersTurn
+	ld a, [de]
+	cp SPLASH_EFFECT
+	jp z, PrintNoEffectText
 	ld hl, DoesntAffectMonText
 	ld a, [wDamageMultipliers]
 	and EFFECTIVENESS_MASK
@@ -4327,6 +4330,8 @@ CalculateDamage:
 ; Calculate OHKO damage based on remaining HP.
 	cp OHKO_EFFECT
 	jp z, JumpToOHKOMoveEffect
+	cp SPLASH_EFFECT
+	jp z, JumpToOHKOMoveEffect
 
 ; Don't calculate damage for moves that don't do any.
 	ld a, d ; base power
@@ -4613,6 +4618,8 @@ ApplyAttackToEnemyPokemon:
 	ld a, [wPlayerMoveEffect]
 	cp OHKO_EFFECT
 	jr z, ApplyDamageToEnemyPokemon
+	cp SPLASH_EFFECT
+	jr z, ApplyDamageToEnemyPokemon
 	cp SUPER_FANG_EFFECT
 	jr z, .superFangEffect
 	cp SPECIAL_DAMAGE_EFFECT
@@ -4731,6 +4738,8 @@ ApplyAttackToEnemyPokemonDone:
 ApplyAttackToPlayerPokemon:
 	ld a, [wEnemyMoveEffect]
 	cp OHKO_EFFECT
+	jr z, ApplyDamageToPlayerPokemon
+	cp SPLASH_EFFECT
 	jr z, ApplyDamageToPlayerPokemon
 	cp SUPER_FANG_EFFECT
 	jr z, .superFangEffect

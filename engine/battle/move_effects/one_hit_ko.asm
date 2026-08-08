@@ -5,6 +5,16 @@ OneHitKOEffect_:
 	ld [hl], a ; set the damage output to zero
 	dec a
 	ld [wCriticalHitOrOHKO], a
+; splash igores speed comparison
+	ldh a, [hWhoseTurn]
+	and a
+	ld a, [wPlayerMoveEffect]
+	jr z, .gotEffect
+	ld a, [wEnemyMoveEffect]
+.gotEffect
+	cp SPLASH_EFFECT
+	jr z, .doHit
+
 	ld hl, wBattleMonSpeed + 1
 	ld de, wEnemyMonSpeed + 1
 	ldh a, [hWhoseTurn]
@@ -24,6 +34,7 @@ OneHitKOEffect_:
 	ld a, [hl]
 	sbc b
 	jr c, .userIsSlower
+.doHit
 	ld hl, wDamage
 	ld a, $ff
 	ld [hli], a

@@ -1280,8 +1280,16 @@ LeechSeedEffect:
 	jpfar LeechSeedEffect_
 
 SplashEffect:
+    ; 1/256 chance to 1 hit KO
+	call BattleRandom
+	and a
+	jr z, .splashKO
 	call PlayCurrentMoveAnimation
-	jp PrintNoEffectText
+	ld a, 1
+	ld [wMoveMissed], a
+	ret
+.splashKO
+	jpfar OneHitKOEffect_
 
 DisableEffect:
 	call MoveHitTest
