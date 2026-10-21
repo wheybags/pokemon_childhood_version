@@ -772,6 +772,7 @@ DEF INDIGO_PLATEAU_EVENTS_END EQU const_value - 1
 	const EVENT_SEAFOAM4_BOULDER2_DOWN_HOLE
 	const_skip 8
 	const EVENT_BEAT_ARTICUNO
+	const EVENT_UNLOCKED_BILLS_GARDEN
 
 ; End of events
 	const_next $A00

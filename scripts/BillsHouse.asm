@@ -1,8 +1,52 @@
+; Talk to Bill this many times in a row to unlock the secret garden.
+DEF BILLS_GARDEN_TALK_THRESHOLD EQU 100
+
 BillsHouse_Script:
 	call EnableAutoTextBoxDrawing
+	call BillsHouseTryEnterGarden
 	ld a, [wBillsHouseCurScript]
 	ld hl, BillsHouse_ScriptPointers
 	jp CallFunctionInTable
+
+; Once the garden is unlocked, pushing up into the two center tiles of the back
+; wall (standing on the walkable tiles at x=3/x=4, y=2) warps out to the
+; normally-inaccessible strip behind Bill's house on Route 25.
+BillsHouseTryEnterGarden:
+	CheckEvent EVENT_UNLOCKED_BILLS_GARDEN
+	ret z
+	ldh a, [hJoyHeld]
+	and PAD_UP
+	ret z
+	ld a, [wYCoord]
+	cp 2
+	ret nz
+	ld a, [wXCoord]
+	cp 3
+	jr z, .atBackWall
+	cp 4
+	ret nz
+.atBackWall
+	ld a, ROUTE_25
+	ldh [hWarpDestinationMap], a
+	ld a, 1 ; Route 25 garden landing anchor (2nd warp)
+	ld [wDestinationWarpID], a
+	ld a, ROUTE_25
+	ld [wLastMap], a
+	ld hl, wStatusFlags3
+	set BIT_WARP_FROM_CUR_SCRIPT, [hl]
+	ret
+
+; Counts consecutive talks to Bill's repeatable dialogue and unlocks the garden.
+BillsHouseCountGardenTalk:
+	CheckEvent EVENT_UNLOCKED_BILLS_GARDEN
+	ret nz ; already unlocked
+	ld a, [wBillsGardenTalkCount]
+	inc a
+	ld [wBillsGardenTalkCount], a
+	cp BILLS_GARDEN_TALK_THRESHOLD
+	ret c
+	SetEvent EVENT_UNLOCKED_BILLS_GARDEN
+	ret
 
 BillsHouse_ScriptPointers:
 	def_script_pointers
@@ -207,10 +251,21 @@ BillsHouseBillSSTicketText:
 
 BillsHouseBillCheckOutMyRarePokemonText:
 	text_asm
+	call BillsHouseCountGardenTalk
+	CheckEvent EVENT_UNLOCKED_BILLS_GARDEN
+	jr nz, .garden_unlocked
 	ld hl, .Text
+	call PrintText
+	jp TextScriptEnd
+.garden_unlocked
+	ld hl, .GardenText
 	call PrintText
 	jp TextScriptEnd
 
 .Text:
 	text_far _BillsHouseBillCheckOutMyRarePokemonText
+	text_end
+
+.GardenText:
+	text_far _BillsHouseBillGardenText
 	text_end

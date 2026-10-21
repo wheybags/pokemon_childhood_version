@@ -9,6 +9,7 @@ BillsHouse_Object:
 	def_warp_events
 	warp_event  2,  7, LAST_MAP, 1
 	warp_event  3,  7, LAST_MAP, 1
+	warp_event  3,  2, LAST_MAP, 1 ; secret garden return landing (back wall, walkable)
 
 	def_bg_events
 

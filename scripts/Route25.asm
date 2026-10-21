@@ -1,12 +1,61 @@
 Route25_Script:
 	call Route25ToggleBillsScript
 	call EnableAutoTextBoxDrawing
+	call Route25GardenScript
 	ld hl, Route25TrainerHeaders
 	ld de, Route25_ScriptPointers
 	ld a, [wRoute25CurScript]
 	call ExecuteCurMapScriptInTable
 	ld [wRoute25CurScript], a
 	ret
+
+; While standing on the secret garden grass behind Bill's house (y=2, x=44-47),
+; keep the three-starters encounter table loaded, and pressing down (toward the
+; house) warps back inside to the back wall.
+Route25GardenScript:
+	CheckEvent EVENT_UNLOCKED_BILLS_GARDEN
+	ret z
+	ld a, [wYCoord]
+	cp 2
+	ret nz
+	ld a, [wXCoord]
+	cp 44
+	ret c ; x < 44
+	cp 48
+	ret nc ; x > 47
+	; in the garden: swap Route 25's wild encounters for the three starters.
+	ld hl, BillsGardenWildMons
+	ld de, wGrassRate
+	ld bc, WILDDATA_LENGTH
+	call CopyData
+	; pressing down (toward the house) returns inside
+	ldh a, [hJoyHeld]
+	and PAD_DOWN
+	ret z
+	ld a, BILLS_HOUSE
+	ldh [hWarpDestinationMap], a
+	ld a, 2 ; Bill's House back-wall landing anchor (3rd warp)
+	ld [wDestinationWarpID], a
+	ld a, ROUTE_25
+	ld [wLastMap], a
+	ld hl, wStatusFlags3
+	set BIT_WARP_FROM_CUR_SCRIPT, [hl]
+	ret
+
+; The secret garden's wild encounters: the three Kanto starters.
+BillsGardenWildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db  5, BULBASAUR
+	db  5, CHARMANDER
+	db  5, SQUIRTLE
+	db  5, BULBASAUR
+	db  5, CHARMANDER
+	db  5, SQUIRTLE
+	db  5, BULBASAUR
+	db  5, CHARMANDER
+	db  5, SQUIRTLE
+	db  5, SQUIRTLE
+	end_grass_wildmons
 
 Route25ToggleBillsScript:
 	ld hl, wCurrentMapScriptFlags
