@@ -980,6 +980,41 @@ OaksLabOak1Text:
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	predef DisplayDexRating
+	callfar CountPokedexOwnedExcludingBonusMons
+	ld a, [wNumSetBits]
+	cp NUM_POKEMON - 2
+	jp c, .done
+	CheckEvent EVENT_BEAT_PROF_OAK
+	jp nz, .done
+	ld hl, .ChallengeText
+	call PrintText
+	ld hl, wStatusFlags3
+	set BIT_TALKED_TO_TRAINER, [hl]
+	set BIT_PRINT_END_BATTLE_TEXT, [hl]
+	ld hl, OaksLabOakDefeatedText
+	ld d, h
+	ld e, l
+	call SaveEndBattleTextPointers
+	ldh a, [hSpriteIndex]
+	ld [wSpriteIndex], a
+	ld a, OPP_PROF_OAK
+	ld [wEngagedTrainerClass], a
+	ld a, [wRivalStarter]
+	cp STARTER2
+	jr nz, .not_squirtle
+	ld a, $1
+	jr .got_team
+.not_squirtle
+	cp STARTER3
+	jr nz, .not_bulbasaur
+	ld a, $2
+	jr .got_team
+.not_bulbasaur
+	ld a, $3
+.got_team
+	ld [wEngagedTrainerSet], a
+	call PlayTrainerMusic
+	call InitBattleEnemyParameters
 	jp .done
 .check_for_poke_balls
 	ld b, POKE_BALL
@@ -1068,6 +1103,16 @@ OaksLabOak1Text:
 .HowIsYourPokedexComingText:
 	text_far _OaksLabOak1HowIsYourPokedexComingText
 	text_end
+
+.ChallengeText:
+	text_far _OaksLabOak1ChallengeText
+	text_end
+
+OaksLabOakDefeatedText:
+	text_far _OaksLabOak1DefeatedText
+	text_asm
+	SetEvent EVENT_BEAT_PROF_OAK
+	jp TextScriptEnd
 
 OaksLabPokedexText:
 	text_asm

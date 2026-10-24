@@ -26,11 +26,9 @@ CeladonMansion3FWriterText:
 
 CeladonMansion3FGameDesignerText:
 	text_asm
-	ld hl, wPokedexOwned
-	ld b, wPokedexOwnedEnd - wPokedexOwned
-	call CountSetBits
+	callfar CountPokedexOwnedExcludingBonusMons
 	ld a, [wNumSetBits]
-	cp NUM_POKEMON - 1 ; discount Mew
+	cp NUM_POKEMON - 2
 	jr nc, .completed_dex
 	ld hl, .Text
 	jr .done

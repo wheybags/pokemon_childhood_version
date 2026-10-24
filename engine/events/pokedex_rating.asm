@@ -136,3 +136,22 @@ DexRatingText_Own140To149:
 DexRatingText_Own150To151:
 	text_far _DexRatingText_Own150To151
 	text_end
+
+CountPokedexOwnedExcludingBonusMons::
+	ld hl, wPokedexOwned
+	ld b, wPokedexOwnedEnd - wPokedexOwned
+	call CountSetBits
+	ld a, DEX_MEW - 1
+	call .DiscountIfOwned
+	ld a, DEX_PIKABLU - 1
+.DiscountIfOwned:
+	ld c, a
+	ld b, FLAG_TEST
+	ld hl, wPokedexOwned
+	predef FlagActionPredef
+	ld a, c
+	and a
+	ret z
+	ld hl, wNumSetBits
+	dec [hl]
+	ret

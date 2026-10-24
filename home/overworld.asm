@@ -342,7 +342,11 @@ OverworldLoopLessDelay::
 	set BIT_BATTLE_OVER_OR_BLACKOUT, [hl]
 	ld a, [wCurMap]
 	cp OAKS_LAB
-	jp z, .noFaintCheck ; no blacking out if the player lost to the rival in Oak's lab
+	jr nz, .checkFaint
+	ld a, [wEnemyMonOrTrainerClass]
+	cp OPP_PROF_OAK
+	jp nz, .noFaintCheck ; no blacking out if the player lost to the rival in Oak's lab
+.checkFaint
 	callfar AnyPartyAlive
 	ld a, d
 	and a

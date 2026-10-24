@@ -362,3 +362,15 @@ _OaksLabScientistText::
 	text "I study #MON as"
 	line "PROF.OAK's AIDE."
 	done
+
+_OaksLabOak1ChallengeText::
+	text "OAK: <PLAYER>!"
+	line "You fulfilled my"
+	cont "dream."
+
+	para "Now, let's battle!"
+	prompt
+
+_OaksLabOak1DefeatedText::
+	text "Amazing!"
+	prompt
