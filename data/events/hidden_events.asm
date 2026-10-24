@@ -359,8 +359,8 @@ DEF ANY_FACING EQU $d0
 	db -1 ; end
 
 	hidden_events_for ROUTE_25
-	hidden_event 38,  3, HiddenItems, ETHER
-	hidden_event 10,  1, HiddenItems, ELIXER
+	hidden_event 38, 11, HiddenItems, ETHER
+	hidden_event 10,  9, HiddenItems, ELIXER
 	db -1 ; end
 
 	hidden_events_for ROUTE_9

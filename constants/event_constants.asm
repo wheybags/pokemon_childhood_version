@@ -773,6 +773,8 @@ DEF INDIGO_PLATEAU_EVENTS_END EQU const_value - 1
 	const_skip 8
 	const EVENT_BEAT_ARTICUNO
 	const EVENT_UNLOCKED_BILLS_GARDEN
+	const_skip 7
+	const EVENT_BEAT_BILLS_GARDEN_PIKABLU
 
 ; End of events
 	const_next $A00

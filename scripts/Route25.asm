@@ -9,26 +9,24 @@ Route25_Script:
 	ld [wRoute25CurScript], a
 	ret
 
-; While standing on the secret garden grass behind Bill's house (y=2, x=44-47),
-; keep the three-starters encounter table loaded, and pressing down (toward the
-; house) warps back inside to the back wall.
+; While in the secret garden behind Bill's house (y < 9), keep the
+; three-starters encounter table loaded. Pressing down on the garden's bottom
+; row (y=8, toward the house) warps back inside to the back wall.
 Route25GardenScript:
 	CheckEvent EVENT_UNLOCKED_BILLS_GARDEN
 	ret z
 	ld a, [wYCoord]
-	cp 2
-	ret nz
-	ld a, [wXCoord]
-	cp 44
-	ret c ; x < 44
-	cp 48
-	ret nc ; x > 47
+	cp 9
+	ret nc
 	; in the garden: swap Route 25's wild encounters for the three starters.
 	ld hl, BillsGardenWildMons
 	ld de, wGrassRate
 	ld bc, WILDDATA_LENGTH
 	call CopyData
-	; pressing down (toward the house) returns inside
+	; pressing down on the bottom row (toward the house) returns inside
+	ld a, [wYCoord]
+	cp 8
+	ret nz
 	ldh a, [hJoyHeld]
 	and PAD_DOWN
 	ret z
@@ -102,6 +100,7 @@ Route25_TextPointers:
 	dw_const Route25Hiker2Text,        TEXT_ROUTE25_HIKER2
 	dw_const Route25Hiker3Text,        TEXT_ROUTE25_HIKER3
 	dw_const PickUpItemText,           TEXT_ROUTE25_TM_SEISMIC_TOSS
+	dw_const Route25PikabluText,       TEXT_ROUTE25_PIKABLU
 	dw_const Route25BillSignText,      TEXT_ROUTE25_BILL_SIGN
 
 Route25TrainerHeaders:
@@ -124,7 +123,24 @@ Route25TrainerHeader7:
 	trainer EVENT_BEAT_ROUTE_25_TRAINER_7, 2, Route25Hiker2BattleText, Route25Hiker2EndBattleText, Route25Hiker2AfterBattleText
 Route25TrainerHeader8:
 	trainer EVENT_BEAT_ROUTE_25_TRAINER_8, 2, Route25Hiker3BattleText, Route25Hiker3EndBattleText, Route25Hiker3AfterBattleText
+	def_trainers 11
+Route25PikabluTrainerHeader:
+	trainer EVENT_BEAT_BILLS_GARDEN_PIKABLU, 0, Route25PikabluBattleText, Route25PikabluBattleText, Route25PikabluBattleText
 	db -1 ; end
+
+Route25PikabluText:
+	text_asm
+	ld hl, Route25PikabluTrainerHeader
+	call TalkToTrainer
+	jp TextScriptEnd
+
+Route25PikabluBattleText:
+	text_far _Route25PikabluBattleText
+	text_asm
+	ld a, PIKABLU
+	call PlayCry
+	call WaitForSoundToFinish
+	jp TextScriptEnd
 
 Route25Youngster1Text:
 	text_asm
