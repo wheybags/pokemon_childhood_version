@@ -1507,3 +1507,13 @@ _VictreebelDexEntry::
 	next "has ever returned"
 	next "from there"
 	dex
+
+_PikabluDexEntry::
+	text "The tip of its"
+	next "tail contains oil"
+	next "that is lighter"
+
+	page "than water. This"
+	next "lets it swim"
+	next "without drowning"
+	dex
