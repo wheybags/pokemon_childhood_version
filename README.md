@@ -1,3 +1,13 @@
+# Pokémon Childhood version
+
+A romhack which implements the most common urban legends from the gen 1 Pokemon games. Based on https://github.com/pret/pokered.
+
+More info at https://wheybags.com/blog/pokemon_childhood_version.html.
+
+
+
+# Original readme:
+
 # Pokémon Red and Blue [![Build Status][ci-badge]][ci]
 
 This is a disassembly of Pokémon Red and Blue.
